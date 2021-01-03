@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.util;
+package gg.xcodiq.pixel.library.util;
 
 import lombok.SneakyThrows;
 

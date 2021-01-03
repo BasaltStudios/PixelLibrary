@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.util.item;
+package gg.xcodiq.pixel.library.util.item;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

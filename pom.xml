@@ -29,8 +29,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>gg.xcodiq</groupId>
-    <artifactId>PixelLibrary</artifactId>
+    <groupId>gg.xcodiq.pixel</groupId>
+    <artifactId>library</artifactId>
     <version>1.0.0</version>
 
     <properties>

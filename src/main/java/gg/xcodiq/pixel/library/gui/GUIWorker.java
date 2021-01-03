@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.gui;
+package gg.xcodiq.pixel.library.gui;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import gg.xcodiq.library.gui.entry.GUIEntry;
+import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

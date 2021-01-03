@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.gui.entry;
+package gg.xcodiq.pixel.library.gui.entry;
 
 import com.google.common.collect.Maps;
 import org.bukkit.entity.Player;

@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.util.item;
+package gg.xcodiq.pixel.library.util.item;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
-import gg.xcodiq.library.util.ReflectionUtil;
+import gg.xcodiq.pixel.library.util.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;

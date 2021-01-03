@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.gui;
+package gg.xcodiq.pixel.library.gui;
 
 import com.google.common.base.Preconditions;
-import gg.xcodiq.library.gui.entry.GUIEntry;
-import gg.xcodiq.library.gui.entry.GUIEntryBuilder;
-import gg.xcodiq.library.util.ChatUtil;
-import gg.xcodiq.library.util.item.ItemBuilder;
+import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
+import gg.xcodiq.pixel.library.gui.entry.GUIEntryBuilder;
+import gg.xcodiq.pixel.library.util.ChatUtil;
+import gg.xcodiq.pixel.library.util.item.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

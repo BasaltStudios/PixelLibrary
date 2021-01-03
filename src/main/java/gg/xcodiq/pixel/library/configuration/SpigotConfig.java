@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.configuration;
+package gg.xcodiq.pixel.library.configuration;
 
 import lombok.SneakyThrows;
 import org.bukkit.configuration.file.FileConfiguration;

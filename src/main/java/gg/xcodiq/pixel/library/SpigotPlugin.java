@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library;
+package gg.xcodiq.pixel.library;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.PaperCommandManager;
-import gg.xcodiq.library.configuration.SpigotConfig;
-import gg.xcodiq.library.gui.GUIWorker;
+import gg.xcodiq.pixel.library.configuration.SpigotConfig;
+import gg.xcodiq.pixel.library.gui.GUIWorker;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;

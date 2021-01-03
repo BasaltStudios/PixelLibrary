@@ -22,33 +22,25 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.library.gui.entry;
+package gg.xcodiq.pixel.library.util;
 
-import com.google.common.collect.Maps;
-import lombok.Getter;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
+public class NumberUtil {
 
-import java.util.HashMap;
-import java.util.function.BiConsumer;
-
-@Getter
-public abstract class GUIEntry {
-
-	private HashMap<ClickType, BiConsumer<Player, InventoryClickEvent>> clickActions = Maps.newHashMap();
-
-	public BiConsumer<Player, InventoryClickEvent> getClickAction(ClickType clickType) {
-		return this.clickActions.get(clickType);
+	private static String decimal(String s, int i) {
+		int b = s.length() - i;
+		return s.substring(0, b) + "." + s.substring(b, b + 2);
 	}
 
-	public GUIEntry setClickActions(HashMap<ClickType, BiConsumer<Player, InventoryClickEvent>> clickActions) {
-		this.clickActions = clickActions;
-		return this;
+	public static String formatInt(int integer) {
+		String n = Integer.toString(integer);
+		int l = n.length();
+
+		if (l > 3 && l < 7) return decimal(n, 3) + "k";
+		if (l < 10) return decimal(n, 6) + "M";
+		if (l < 13) return decimal(n, 9) + "B";
+		if (l < 16) return decimal(n, 12) + "T";
+		if (l < 19) return decimal(n, 15) + "Q";
+
+		return n;
 	}
-
-	public abstract ItemStack getItem();
-
-	public abstract Integer getSlot();
 }
