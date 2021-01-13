@@ -25,38 +25,41 @@
 package gg.xcodiq.pixel.library.gui.entry;
 
 import com.google.common.collect.Maps;
+import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public class GUIEntryBuilder {
 
-	private final HashMap<ClickType, BiConsumer<Player, InventoryClickEvent>> clickActions = Maps.newHashMap();
+	private final HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();
 
-	private ItemStack itemStack;
-	private Integer slot;
+	private Supplier<ItemStack> itemStackSupplier;
+	private int slot = -1;
 
-	public GUIEntryBuilder setItem(ItemStack itemStack) {
-		this.itemStack = itemStack;
+	public GUIEntryBuilder setItem(Supplier<ItemStack> itemStackSupplier) {
+		this.itemStackSupplier = itemStackSupplier;
 		return this;
 	}
 
-	public GUIEntryBuilder setSlot(Integer slot) {
+	public GUIEntryBuilder setSlot(int slot) {
 		this.slot = slot;
 		return this;
 	}
 
-	public GUIEntryBuilder setAction(ClickType clickType, BiConsumer<Player, InventoryClickEvent> consumer) {
+	public GUIEntryBuilder setAction(ClickType clickType, BiConsumer<Player, GUIClickEvent> consumer) {
 		clickActions.put(clickType, consumer);
 		return this;
 	}
 
-	public GUIEntryBuilder onClick(BiConsumer<Player, InventoryClickEvent> consumer) {
+	public GUIEntryBuilder onClick(BiConsumer<Player, GUIClickEvent> consumer) {
 		clickActions.put(ClickType.LEFT, consumer);
 		clickActions.put(ClickType.SHIFT_LEFT, consumer);
 		clickActions.put(ClickType.WINDOW_BORDER_LEFT, consumer);
@@ -66,7 +69,7 @@ public class GUIEntryBuilder {
 		return this;
 	}
 
-	public GUIEntryBuilder onAllClicks(BiConsumer<Player, InventoryClickEvent> consumer) {
+	public GUIEntryBuilder onAllClicks(BiConsumer<Player, GUIClickEvent> consumer) {
 		Arrays.stream(ClickType.values()).forEach(value -> clickActions.put(value, consumer));
 		return this;
 	}
@@ -75,12 +78,17 @@ public class GUIEntryBuilder {
 		return new GUIEntry() {
 			@Override
 			public ItemStack getItem() {
-				return itemStack;
+				return Optional.ofNullable(itemStackSupplier).map(Supplier::get).orElseGet(() -> new ItemStack(Material.AIR));
 			}
 
 			@Override
-			public Integer getSlot() {
+			public int getSlot() {
 				return slot;
+			}
+
+			@Override
+			public void setSlot(int newSlot) {
+				slot = newSlot;
 			}
 		}.setClickActions(clickActions);
 	}

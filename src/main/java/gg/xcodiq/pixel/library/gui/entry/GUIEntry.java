@@ -25,10 +25,10 @@
 package gg.xcodiq.pixel.library.gui.entry;
 
 import com.google.common.collect.Maps;
+import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -37,18 +37,20 @@ import java.util.function.BiConsumer;
 @Getter
 public abstract class GUIEntry {
 
-	private HashMap<ClickType, BiConsumer<Player, InventoryClickEvent>> clickActions = Maps.newHashMap();
+	private HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();
 
-	public BiConsumer<Player, InventoryClickEvent> getClickAction(ClickType clickType) {
+	public BiConsumer<Player, GUIClickEvent> getClickAction(ClickType clickType) {
 		return this.clickActions.get(clickType);
 	}
 
-	public GUIEntry setClickActions(HashMap<ClickType, BiConsumer<Player, InventoryClickEvent>> clickActions) {
+	public GUIEntry setClickActions(HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions) {
 		this.clickActions = clickActions;
 		return this;
 	}
 
 	public abstract ItemStack getItem();
 
-	public abstract Integer getSlot();
+	public abstract int getSlot();
+
+	public abstract void setSlot(int slot);
 }

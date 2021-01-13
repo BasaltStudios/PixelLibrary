@@ -52,14 +52,7 @@ public abstract class GUI implements InventoryHolder {
 		this.inventory = Bukkit.createInventory(this, rows * 9, ChatUtil.format(name));
 	}
 
-	public void addItem(GUIEntry entry) {
-		if (entries.contains(entry)) return;
-
-		entries.add(entry);
-	}
-
-	public void setItemLegacy(int slot, ItemStack itemStack) {
-		GUIEntry entry = new GUIEntryBuilder().setSlot(slot).setItem(itemStack).build();
+	protected void addItem(GUIEntry entry) {
 		if (entries.contains(entry)) return;
 
 		entries.add(entry);
@@ -113,7 +106,7 @@ public abstract class GUI implements InventoryHolder {
 
 		Arrays.stream(slots)
 				.filter(slot -> this.getEntries().stream().map(GUIEntry::getSlot).noneMatch(i -> i == slot))
-				.forEach(slot -> this.setItemLegacy(slot, this.getBorder()));
+				.forEach(slot -> this.addItem(new GUIEntryBuilder().setSlot(slot).setItem(this::getBorder).build()));
 	}
 
 	@Override

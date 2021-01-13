@@ -27,14 +27,15 @@ package gg.xcodiq.pixel.library.gui;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
+import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -73,9 +74,13 @@ public class GUIWorker {
 		this.gui.getEntries().stream().filter(Objects::nonNull).collect(Collectors.toList()).forEach(entry -> {
 
 			// Check if the slot of the entry is null
-			if (entry.getSlot() == null) {
+			if (entry.getSlot() == -1) {
 				inventory.addItem(entry.getItem());
-				entriesBySlot.put(inventory.first(entry.getItem()), entry);
+
+				int slot = inventory.first(entry.getItem());
+				entry.setSlot(slot);
+
+				entriesBySlot.put(slot, entry);
 			} else {
 				inventory.setItem(entry.getSlot(), entry.getItem());
 				entriesBySlot.put(entry.getSlot(), entry);
@@ -100,22 +105,30 @@ public class GUIWorker {
 
 		@EventHandler
 		public void onInventoryClick(InventoryClickEvent event) {
+			if (event instanceof GUIClickEvent) return;
 			if (!(event.getInventory().getHolder() instanceof GUI)) return;
 
-			// Get an instance of a GUI worker from the inventory
+			if (event.getClickedInventory() == null) return;
+			if (!(event.getClickedInventory().getHolder() instanceof GUI)) return;
+
+//			// Get an instance of a GUI worker from the inventory
 			GUIWorker worker = GUIWorker.fromInventory(event.getInventory());
 			if (worker == null) return;
 
-			ItemStack itemStack = event.getCurrentItem();
-			Player player = (Player) event.getWhoClicked();
+			event.setCancelled(true);
+			Bukkit.getPluginManager().callEvent(new GUIClickEvent(worker, event));
+		}
+
+		@EventHandler
+		public void onGUIClick(GUIClickEvent event) {
+			GUIWorker worker = event.getWorker();
+			Player player = event.getPlayer();
 
 			// Get an entry instance by the clicked slot
 			GUIEntry entry = worker.getEntryBySlot(event.getSlot());
-			if (itemStack == null || entry == null) return;
+			if (entry == null) return;
 
-			event.setCancelled(true);
-
-			BiConsumer<Player, InventoryClickEvent> consumer = entry.getClickAction(event.getClick());
+			BiConsumer<Player, GUIClickEvent> consumer = entry.getClickAction(event.getClick());
 			if (consumer != null) consumer.accept(player, event);
 		}
 
