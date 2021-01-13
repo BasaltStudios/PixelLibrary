@@ -481,7 +481,7 @@ public class ItemBuilder {
 	 * @return the owning player
 	 */
 	public ItemBuilder setOwningPlayer(OfflinePlayer player) {
-		if (this.itemStack.getType() == Material.PLAYER_HEAD) {
+		if (this.itemStack.getType() == Material.LEGACY_SKULL_ITEM) {
 			((SkullMeta) this.itemMeta).setOwner(player.getName());
 		}
 		return this;
@@ -495,7 +495,7 @@ public class ItemBuilder {
 	}
 
 	public ItemBuilder setSkullURL(String url) {
-		if (itemStack.getType() != Material.PLAYER_HEAD)
+		if (itemStack.getType() != Material.LEGACY_SKULL_ITEM)
 			throw new IllegalArgumentException("ItemStack is not SKULL_ITEM");
 
 		if (!ReflectionUtil.set(itemMeta.getClass(), itemMeta, "profile", this.createProfileWithTexture(url)))
