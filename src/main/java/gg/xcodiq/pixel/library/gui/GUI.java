@@ -27,6 +27,7 @@ package gg.xcodiq.pixel.library.gui;
 import com.google.common.base.Preconditions;
 import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
 import gg.xcodiq.pixel.library.gui.entry.GUIEntryBuilder;
+import gg.xcodiq.pixel.library.gui.page.GUIPage;
 import gg.xcodiq.pixel.library.util.ChatUtil;
 import gg.xcodiq.pixel.library.util.item.ItemBuilder;
 import lombok.Getter;
@@ -40,16 +41,24 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 @Getter
 public abstract class GUI implements InventoryHolder {
 
 	private final HashMap<UUID, GUIWorker> workers = new HashMap<>();
-	private final LinkedList<GUIEntry> entries = new LinkedList<>();
-	private final Inventory inventory;
 
-	public GUI(String name, int rows) {
-		this.inventory = Bukkit.createInventory(this, rows * 9, ChatUtil.format(name));
+	private final LinkedList<GUIEntry> entries = new LinkedList<>();
+	private final LinkedList<GUIPage> pages = new LinkedList<>();
+
+	private final String title;
+	private final int rows;
+
+	private Inventory inventory;
+
+	public GUI(String title, int rows) {
+		this.title = title;
+		this.rows = rows;
 	}
 
 	protected void addItem(GUIEntry entry) {
@@ -58,11 +67,24 @@ public abstract class GUI implements InventoryHolder {
 		entries.add(entry);
 	}
 
-	public void open(Player player) {
-		this.init();
+	protected void addPage(GUIPage page) {
+		if (pages.contains(page)) return;
 
-		GUIWorker worker = new GUIWorker(this, player);
+		pages.add(page);
+	}
+
+	public void open(Player player, int pageNumber) {
+		this.init();
+		GUIPage page = pages.size() > 0 ? pages.get(pageNumber - 1) : null;
+
+		this.inventory = Bukkit.createInventory(this, rows * 9, ChatUtil.format(page == null ? title : page.getTitle()));
+
+		GUIWorker worker = new GUIWorker(this, page, player);
 		workers.put(player.getUniqueId(), worker);
+	}
+
+	public void open(Player player) {
+		this.open(player, 1);
 	}
 
 	public void close(Player player) {
@@ -72,6 +94,10 @@ public abstract class GUI implements InventoryHolder {
 		worker.deleteGUIWorker();
 	}
 
+	public int getPageNumber(GUIPage page) {
+		return pages.indexOf(page) + 1;
+	}
+
 	public void removeFromWorkers(Player player, GUIWorker worker) {
 		workers.remove(player.getUniqueId(), worker);
 	}
@@ -79,10 +105,6 @@ public abstract class GUI implements InventoryHolder {
 	protected abstract void init();
 
 	public void onClose(GUI gui, InventoryCloseEvent event) {
-	}
-
-	public ItemStack getBorder() {
-		return new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setName(" ").toItemStack();
 	}
 
 	public void fillBorders() {
@@ -107,6 +129,28 @@ public abstract class GUI implements InventoryHolder {
 		Arrays.stream(slots)
 				.filter(slot -> this.getEntries().stream().map(GUIEntry::getSlot).noneMatch(i -> i == slot))
 				.forEach(slot -> this.addItem(new GUIEntryBuilder().setSlot(slot).setItem(this::getBorder).build()));
+	}
+
+	public ItemStack getBorder() {
+		return new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setName(" ").toItemStack();
+	}
+
+	public BiFunction<GUIPage, Player, GUIEntry> getCloseButton() {
+		return (page, player) -> new GUIEntryBuilder().setItem(() -> new ItemBuilder(Material.BARRIER)
+				.setName(ChatUtil.format("&cClick to close &f" + this.getTitle() + " &7(Page #" + (page == null ? 1 : this.getPageNumber(page)) + ")"))
+				.toItemStack()).build();
+	}
+
+	public BiFunction<GUIPage, Player, GUIEntry> getEmptyArrow() {
+		return (page, player) -> new GUIEntryBuilder().setItem(() -> new ItemBuilder(Material.PAPER).setName(ChatUtil.format("&4&lDEAD END &4☠")).toItemStack()).build();
+	}
+
+	public BiFunction<GUIPage, Player, GUIEntry> getNextArrow() {
+		return (page, player) -> new GUIEntryBuilder().setItem(() -> new ItemBuilder(Material.ARROW).setName(ChatUtil.format("&b&lNEXT PAGE >>")).toItemStack()).build();
+	}
+
+	public BiFunction<GUIPage, Player, GUIEntry> getPreviousArrow() {
+		return (page, player) -> new GUIEntryBuilder().setItem(() -> new ItemBuilder(Material.ARROW).setName(ChatUtil.format("&b&l<< PREVIOUS PAGE")).toItemStack()).build();
 	}
 
 	@Override

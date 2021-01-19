@@ -22,41 +22,43 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.pixel.library.gui.entry;
+package gg.xcodiq.pixel.library.gui.page;
 
-import com.google.common.collect.Maps;
-import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
+import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
 import lombok.Getter;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.function.BiConsumer;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-public abstract class GUIEntry {
+public class GUIPageBuilder {
 
-	private HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();
+	private final List<GUIEntry> entries = new ArrayList<>();
 
-	public BiConsumer<Player, GUIClickEvent> getClickAction(ClickType clickType) {
-		return this.clickActions.get(clickType);
-	}
+	private String title;
+	private int rows;
 
-	public GUIEntry setClickActions(HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions) {
-		this.clickActions = clickActions;
+	public GUIPageBuilder setTitle(String title) {
+		this.title = title;
 		return this;
 	}
 
-	public void onAllClicks(BiConsumer<Player, GUIClickEvent> consumer) {
-		for (ClickType value : ClickType.values()) {
-			clickActions.put(value, consumer);
-		}
+	public GUIPageBuilder setRows(int rows) {
+		this.rows = rows;
+		return this;
 	}
 
-	public abstract ItemStack getItem();
+	public GUIPageBuilder addItem(GUIEntry entry) {
+		if (!entries.contains(entry)) entries.add(entry);
+		return this;
+	}
 
-	public abstract int getSlot();
+	public GUIPage build() {
+		GUIPage page = new GUIPage(this.title, this.rows) {
+		};
 
-	public abstract void setSlot(int slot);
+		for (GUIEntry entry : this.entries) page.addItem(entry);
+
+		return page;
+	}
 }

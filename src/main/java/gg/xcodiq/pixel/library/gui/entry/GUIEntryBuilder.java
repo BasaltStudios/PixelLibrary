@@ -26,6 +26,7 @@ package gg.xcodiq.pixel.library.gui.entry;
 
 import com.google.common.collect.Maps;
 import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -37,6 +38,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+@Getter
 public class GUIEntryBuilder {
 
 	private final HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();

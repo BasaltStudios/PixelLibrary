@@ -22,41 +22,41 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.pixel.library.gui.entry;
+package gg.xcodiq.pixel.library.gui.page;
 
-import com.google.common.collect.Maps;
-import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
+import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
+import gg.xcodiq.pixel.library.util.ChatUtil;
 import lombok.Getter;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.Bukkit;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 
-import java.util.HashMap;
-import java.util.function.BiConsumer;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-public abstract class GUIEntry {
+public abstract class GUIPage implements InventoryHolder {
 
-	private HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();
+	private final List<GUIEntry> entries = new ArrayList<>();
+	private final Inventory inventory;
 
-	public BiConsumer<Player, GUIClickEvent> getClickAction(ClickType clickType) {
-		return this.clickActions.get(clickType);
+	private final String title;
+	private final int rows;
+
+	public GUIPage(String title, int rows) {
+		this.title = title;
+		this.rows = rows;
+
+		this.inventory = Bukkit.createInventory(this, rows * 9, ChatUtil.format(title));
 	}
 
-	public GUIEntry setClickActions(HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions) {
-		this.clickActions = clickActions;
-		return this;
+	public void addItem(GUIEntry entry) {
+		if (entries.contains(entry)) return;
+
+		entries.add(entry);
 	}
 
-	public void onAllClicks(BiConsumer<Player, GUIClickEvent> consumer) {
-		for (ClickType value : ClickType.values()) {
-			clickActions.put(value, consumer);
-		}
+	public void onClose(GUIPage page, InventoryCloseEvent event) {
 	}
-
-	public abstract ItemStack getItem();
-
-	public abstract int getSlot();
-
-	public abstract void setSlot(int slot);
 }
