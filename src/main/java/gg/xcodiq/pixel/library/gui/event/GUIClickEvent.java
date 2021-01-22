@@ -32,8 +32,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 @Getter
 public class GUIClickEvent extends InventoryClickEvent implements Cancellable {
 
@@ -41,8 +39,7 @@ public class GUIClickEvent extends InventoryClickEvent implements Cancellable {
 	private boolean cancelled;
 
 	public GUIClickEvent(@NotNull GUIWorker worker, InventoryClickEvent event) {
-		super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(),
-				event.getAction());
+		super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
 
 		this.worker = worker;
 	}
@@ -55,7 +52,6 @@ public class GUIClickEvent extends InventoryClickEvent implements Cancellable {
 		GUIEntry entry = worker.getEntryBySlot(this.getSlot());
 		if (entry == null) return;
 
-		System.out.println(String.join("\n", Objects.requireNonNull(entry.getItem().getLore())));
 		worker.getInventory().setItem(entry.getSlot(), entry.getItem());
 	}
 

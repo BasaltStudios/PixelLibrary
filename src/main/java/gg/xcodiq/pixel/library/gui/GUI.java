@@ -31,6 +31,7 @@ import gg.xcodiq.pixel.library.gui.page.GUIPage;
 import gg.xcodiq.pixel.library.util.ChatUtil;
 import gg.xcodiq.pixel.library.util.item.ItemBuilder;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -51,8 +52,10 @@ public abstract class GUI implements InventoryHolder {
 	private final LinkedList<GUIEntry> entries = new LinkedList<>();
 	private final LinkedList<GUIPage> pages = new LinkedList<>();
 
-	private final String title;
-	private final int rows;
+	@Setter
+	private String title;
+	@Setter
+	private int rows;
 
 	private Inventory inventory;
 
