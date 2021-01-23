@@ -79,32 +79,40 @@ public class GUIWorker {
 			page.getEntries().stream().filter(Objects::nonNull).collect(Collectors.toList()).forEach(this::setEntry);
 
 			GUIEntry previousArrow = this.gui.getPreviousArrow().apply(page, this.player);
-			if (currentPage != 1) previousArrow.onAllClicks((player, event) -> {
-				GUIWorker before = GUIWorker.fromInventory(this.inventory);
-				if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
+			if (previousArrow != null) {
+				if (currentPage != 1) previousArrow.onAllClicks((player, event) -> {
+					GUIWorker before = GUIWorker.fromInventory(this.inventory);
+					if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
 
-				player.playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1.0f, 1.0f);
-				this.gui.open(player, currentPage - 1);
-			});
+					player.playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1.0f, 1.0f);
+					this.gui.open(player, currentPage - 1);
+				});
+			}
 
 			GUIEntry nextArrow = this.gui.getNextArrow().apply(page, this.player);
-			if (currentPage != gui.getPages().size()) nextArrow.onAllClicks((player, event) -> {
-				GUIWorker before = GUIWorker.fromInventory(this.inventory);
-				if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
+			if (nextArrow != null) {
+				if (currentPage != gui.getPages().size()) nextArrow.onAllClicks((player, event) -> {
+					GUIWorker before = GUIWorker.fromInventory(this.inventory);
+					if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
 
-				player.playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1.0f, 1.0f);
-				this.gui.open(player, currentPage + 1);
-			});
+					player.playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1.0f, 1.0f);
+					this.gui.open(player, currentPage + 1);
+				});
+			}
 
 			GUIEntry emptyArrow = this.gui.getEmptyArrow().apply(page, this.player).setClickActions(new HashMap<>());
 
 			// PREVIOUS ARROW BUTTON
-			if (currentPage != 1) this.setEntryInSlot((rows * 9) - 6, previousArrow, true);
-			else this.setEntryInSlot((rows * 9) - 6, emptyArrow, true);
+			if (previousArrow != null && emptyArrow != null) {
+				if (currentPage != 1) this.setEntryInSlot((rows * 9) - 6, previousArrow);
+				else this.setEntryInSlot((rows * 9) - 6, emptyArrow);
+			}
 
 			// NEXT ARROW BUTTON
-			if (currentPage != this.gui.getPages().size()) this.setEntryInSlot((rows * 9) - 4, nextArrow, true);
-			else this.setEntryInSlot((rows * 9) - 4, emptyArrow, true);
+			if (nextArrow != null && emptyArrow != null) {
+				if (currentPage != this.gui.getPages().size()) this.setEntryInSlot((rows * 9) - 4, nextArrow);
+				else this.setEntryInSlot((rows * 9) - 4, emptyArrow);
+			}
 		} else {
 			// Loop through all the entries of the given GUI
 			this.gui.getEntries().stream().filter(Objects::nonNull).collect(Collectors.toList()).forEach(this::setEntry);
@@ -112,11 +120,14 @@ public class GUIWorker {
 
 		// CLOSE BUTTON
 		GUIEntry closeButton = this.gui.getCloseButton().apply(page, this.player);
-		closeButton.onAllClicks((player, event) -> {
-			player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
-			player.closeInventory();
-		});
-		this.setEntryInSlot((rows * 9) - 5, closeButton, true);
+		if (closeButton != null) {
+			closeButton.onAllClicks((player, event) -> {
+				player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
+				player.closeInventory();
+			});
+
+			this.setEntryInSlot((rows * 9) - 5, closeButton);
+		}
 
 		// Finish the setup
 		this.gui.getPages().clear();
@@ -137,14 +148,13 @@ public class GUIWorker {
 		}
 	}
 
-	private void setEntryInSlot(int slot, GUIEntry entry, boolean addToCache) {
+	private void setEntryInSlot(int slot, GUIEntry entry) {
 		if (entry.getSlot() != -1) {
 			this.inventory.setItem(entry.getSlot(), entry.getItem());
 		} else {
 			if (this.gui.getRows() <= 2) this.inventory.addItem(entry.getItem());
 			else this.inventory.setItem(slot, entry.getItem());
 
-			if (!addToCache) return;
 			GUIWorker.entriesBySlot.put(entry.getSlot() == -1 ? inventory.first(entry.getItem()) : entry.getSlot(), entry);
 		}
 	}

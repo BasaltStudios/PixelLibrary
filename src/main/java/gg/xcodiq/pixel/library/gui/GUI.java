@@ -41,7 +41,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiFunction;
 
 @Getter
@@ -111,27 +114,22 @@ public abstract class GUI implements InventoryHolder {
 	}
 
 	public void fillBorders() {
-		int[] slots;
-		switch (this.inventory.getSize() / 9) {
-			case 3:
-				slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
-				break;
-			case 4:
-				slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35};
-				break;
-			case 5:
-				slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44};
-				break;
-			case 6:
-				slots = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53};
-				break;
-			default:
-				return;
-		}
+		int currentRow = 1;
 
-		Arrays.stream(slots)
-				.filter(slot -> this.getEntries().stream().map(GUIEntry::getSlot).noneMatch(i -> i == slot))
-				.forEach(slot -> this.addItem(new GUIEntryBuilder().setSlot(slot).setItem(this::getBorder).build()));
+		for (int i = 0; i < this.inventory.getSize(); i++) {
+			if (i / 9 == currentRow) currentRow++;
+			ItemStack item = this.inventory.getItem(i);
+			if (item == null || item.getType() == Material.AIR) continue;
+
+			if (currentRow == 1 || currentRow == this.getRows()) {
+				this.addItem(new GUIEntryBuilder().setSlot(i).setItem(this::getBorder).build());
+				continue;
+			}
+
+			if (i == currentRow + 9 - 1 || i == (currentRow - 1) + 9) {
+				this.addItem(new GUIEntryBuilder().setSlot(i).setItem(this::getBorder).build());
+			}
+		}
 	}
 
 	public ItemStack getBorder() {
