@@ -127,7 +127,7 @@ public class GUIWorker {
 		// CLOSE BUTTON
 		this.gui.getCloseButton().ifPresent(f -> {
 			GUIEntry entry = f.compile(page, this.player).onAllClicks((player, event) -> {
-				player.playSound(player.getLocation(), XSound.BLOCK_CHEST_OPEN.parseSound(), 1.0f, 1.0f);
+				player.playSound(player.getLocation(), XSound.BLOCK_CHEST_CLOSE.parseSound(), 1.0f, 1.0f);
 				player.closeInventory();
 			});
 
