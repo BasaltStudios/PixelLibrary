@@ -24,13 +24,13 @@
 
 package gg.xcodiq.pixel.library.gui;
 
+import com.cryptomorin.xseries.XSound;
 import com.google.common.base.Preconditions;
 import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
 import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
 import gg.xcodiq.pixel.library.gui.page.GUIPage;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -89,7 +89,7 @@ public class GUIWorker {
 						GUIWorker before = GUIWorker.fromInventory(this.inventory);
 						if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
 
-						player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_BUTTON_CLICK_ON, 1.0f, 1.0f);
+						player.playSound(player.getLocation(), XSound.BLOCK_WOODEN_BUTTON_CLICK_ON.parseSound(), 1.0f, 1.0f);
 						this.gui.open(player, currentPage - 1);
 					});
 
@@ -108,7 +108,7 @@ public class GUIWorker {
 						GUIWorker before = GUIWorker.fromInventory(this.inventory);
 						if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
 
-						player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_BUTTON_CLICK_ON, 1.0f, 1.0f);
+						player.playSound(player.getLocation(), XSound.BLOCK_WOODEN_BUTTON_CLICK_ON.parseSound(), 1.0f, 1.0f);
 						this.gui.open(player, currentPage + 1);
 					});
 
@@ -127,7 +127,7 @@ public class GUIWorker {
 		// CLOSE BUTTON
 		this.gui.getCloseButton().ifPresent(f -> {
 			GUIEntry entry = f.compile(page, this.player).onAllClicks((player, event) -> {
-				player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
+				player.playSound(player.getLocation(), XSound.BLOCK_CHEST_OPEN.parseSound(), 1.0f, 1.0f);
 				player.closeInventory();
 			});
 
