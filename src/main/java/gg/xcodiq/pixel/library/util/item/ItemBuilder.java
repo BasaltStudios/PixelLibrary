@@ -24,6 +24,7 @@
 
 package gg.xcodiq.pixel.library.util.item;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
@@ -65,8 +66,8 @@ public class ItemBuilder {
 	 *
 	 * @param type the type
 	 */
-	public ItemBuilder(Material type) {
-		this(new ItemStack(type));
+	public ItemBuilder(XMaterial type) {
+		this(new ItemStack(type.parseMaterial() == null ? Material.AIR : type.parseMaterial()));
 	}
 
 	/**
@@ -75,19 +76,8 @@ public class ItemBuilder {
 	 * @param type   the type
 	 * @param amount the amount
 	 */
-	public ItemBuilder(Material type, int amount) {
-		this(new ItemStack(type, amount));
-	}
-
-	/**
-	 * Instantiates a new Item builder.
-	 *
-	 * @param type   the type
-	 * @param amount the amount
-	 * @param damage the damage
-	 */
-	public ItemBuilder(Material type, int amount, short damage) {
-		this(new ItemStack(type, amount, damage));
+	public ItemBuilder(XMaterial type, int amount) {
+		this(new ItemStack(type.parseMaterial() == null ? Material.AIR : type.parseMaterial(), amount));
 	}
 
 	/**
@@ -97,8 +87,19 @@ public class ItemBuilder {
 	 * @param amount the amount
 	 * @param damage the damage
 	 */
-	public ItemBuilder(Material type, int amount, int damage) {
-		this(new ItemStack(type, amount, (short) damage));
+	public ItemBuilder(XMaterial type, int amount, short damage) {
+		this(new ItemStack(type.parseMaterial() == null ? Material.AIR : type.parseMaterial(), amount, damage));
+	}
+
+	/**
+	 * Instantiates a new Item builder.
+	 *
+	 * @param type   the type
+	 * @param amount the amount
+	 * @param damage the damage
+	 */
+	public ItemBuilder(XMaterial type, int amount, int damage) {
+		this(new ItemStack(type.parseMaterial() == null ? Material.AIR : type.parseMaterial(), amount, (short) damage));
 	}
 
 	/**
@@ -285,8 +286,8 @@ public class ItemBuilder {
 	 * @return the type
 	 */
 	@Deprecated
-	public ItemBuilder setType(Material type) {
-		this.itemStack.setType(type);
+	public ItemBuilder setType(XMaterial type) {
+		this.itemStack.setType(type.parseMaterial() == null ? Material.AIR : type.parseMaterial());
 		return this;
 	}
 
@@ -298,7 +299,7 @@ public class ItemBuilder {
 	 * @return the item builder
 	 */
 	@Deprecated
-	public ItemBuilder type(Material type) {
+	public ItemBuilder type(XMaterial type) {
 		return this.setType(type);
 	}
 
@@ -481,7 +482,7 @@ public class ItemBuilder {
 	 * @return the owning player
 	 */
 	public ItemBuilder setOwningPlayer(OfflinePlayer player) {
-		if (this.itemStack.getType() == Material.LEGACY_SKULL_ITEM) {
+		if (this.itemStack.getType() == XMaterial.PLAYER_HEAD.parseMaterial()) {
 			((SkullMeta) this.itemMeta).setOwner(player.getName());
 		}
 		return this;
@@ -495,7 +496,7 @@ public class ItemBuilder {
 	}
 
 	public ItemBuilder setSkullURL(String url) {
-		if (itemStack.getType() != Material.LEGACY_SKULL_ITEM)
+		if (itemStack.getType() != XMaterial.PLAYER_HEAD.parseMaterial())
 			throw new IllegalArgumentException("ItemStack is not SKULL_ITEM");
 
 		if (!ReflectionUtil.set(itemMeta.getClass(), itemMeta, "profile", this.createProfileWithTexture(url)))
@@ -525,8 +526,7 @@ public class ItemBuilder {
 	 * @return the boolean
 	 */
 	private boolean isPotion() {
-		Material material = itemStack.getType();
-		return material == Material.POTION;
+		return XMaterial.matchXMaterial(itemStack.getType()) == XMaterial.POTION;
 	}
 
 	/**
@@ -610,7 +610,7 @@ public class ItemBuilder {
 	 * @return the map scaling
 	 */
 	public ItemBuilder setMapScaling(boolean value) {
-		if (this.itemStack.getType() == Material.MAP) {
+		if (XMaterial.matchXMaterial(this.itemStack.getType()) == XMaterial.MAP) {
 			((MapMeta) this.itemMeta).setScaling(value);
 		}
 		return this;
@@ -633,11 +633,11 @@ public class ItemBuilder {
 	 * @return the boolean
 	 */
 	private boolean isLeatherArmor() {
-		Material material = itemStack.getType();
-		return material == Material.LEATHER_HELMET ||
-				material == Material.LEATHER_CHESTPLATE ||
-				material == Material.LEATHER_LEGGINGS ||
-				material == Material.LEATHER_BOOTS;
+		XMaterial material = XMaterial.matchXMaterial(this.itemStack.getType());
+		return material == XMaterial.LEATHER_HELMET ||
+				material == XMaterial.LEATHER_CHESTPLATE ||
+				material == XMaterial.LEATHER_LEGGINGS ||
+				material == XMaterial.LEATHER_BOOTS;
 	}
 
 	/**
@@ -673,8 +673,8 @@ public class ItemBuilder {
 	 * @return the boolean
 	 */
 	private boolean isBook() {
-		Material material = this.itemStack.getType();
-		return material == Material.LEGACY_BOOK_AND_QUILL || material == Material.WRITTEN_BOOK;
+		XMaterial material = XMaterial.matchXMaterial(this.itemStack.getType());
+		return material == XMaterial.WRITABLE_BOOK || material == XMaterial.WRITTEN_BOOK;
 	}
 
 	/**

@@ -32,6 +32,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 @Getter
@@ -48,10 +49,11 @@ public abstract class GUIEntry {
 		return this;
 	}
 
-	public void onAllClicks(BiConsumer<Player, GUIClickEvent> consumer) {
+	public GUIEntry onAllClicks(BiConsumer<Player, GUIClickEvent> consumer) {
 		for (ClickType value : ClickType.values()) {
 			clickActions.put(value, consumer);
 		}
+		return this;
 	}
 
 	public abstract ItemStack getItem();
@@ -59,4 +61,17 @@ public abstract class GUIEntry {
 	public abstract int getSlot();
 
 	public abstract void setSlot(int slot);
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GUIEntry guiEntry = (GUIEntry) o;
+		return Objects.equals(clickActions, guiEntry.clickActions);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(clickActions);
+	}
 }

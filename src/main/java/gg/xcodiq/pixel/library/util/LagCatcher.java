@@ -22,50 +22,28 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.pixel.library.gui.page;
+package gg.xcodiq.pixel.library.util;
 
-import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
-import lombok.Getter;
+import java.time.Instant;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LagCatcher {
 
-@Getter
-public class GUIPageBuilder {
+	private static final String previous = "";
+	private static Instant previousInstant = Instant.now();
 
-	private final List<GUIEntry> entries = new ArrayList<>();
+	public static void reset(String name) {
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
 
-	private String title;
-	private int rows;
-
-	private boolean fillBorders = false;
-
-	public GUIPageBuilder setTitle(String title) {
-		this.title = title;
-		return this;
+		previousInstant = Instant.now();
+		log(name);
 	}
 
-	public GUIPageBuilder setRows(int rows) {
-		this.rows = rows;
-		return this;
+	public static void log(String name) {
+		Instant instant = Instant.now();
+		long differenceInMS = instant.toEpochMilli() - previousInstant.toEpochMilli();
+		System.out.printf("%-25s%s%n", name, instant.toEpochMilli() + " (+ " + (differenceInMS) + "ms)");
+		previousInstant = instant;
 	}
 
-	public GUIPageBuilder addItem(GUIEntry entry) {
-		if (!entries.contains(entry)) entries.add(entry);
-		return this;
-	}
-
-	public GUIPageBuilder fillBorders() {
-		this.fillBorders = true;
-		return this;
-	}
-
-	public GUIPage build() {
-		GUIPage page = new GUIPage(this.title, this.rows) {
-		};
-
-		for (GUIEntry entry : this.entries) page.addItem(entry);
-
-		return page;
-	}
 }

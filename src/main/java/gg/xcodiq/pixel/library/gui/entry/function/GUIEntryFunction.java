@@ -22,50 +22,10 @@
  * SOFTWARE.
  */
 
-package gg.xcodiq.pixel.library.gui.page;
+package gg.xcodiq.pixel.library.gui.entry.function;
 
-import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
-import lombok.Getter;
+@FunctionalInterface
+public interface GUIEntryFunction<T, U, R> {
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Getter
-public class GUIPageBuilder {
-
-	private final List<GUIEntry> entries = new ArrayList<>();
-
-	private String title;
-	private int rows;
-
-	private boolean fillBorders = false;
-
-	public GUIPageBuilder setTitle(String title) {
-		this.title = title;
-		return this;
-	}
-
-	public GUIPageBuilder setRows(int rows) {
-		this.rows = rows;
-		return this;
-	}
-
-	public GUIPageBuilder addItem(GUIEntry entry) {
-		if (!entries.contains(entry)) entries.add(entry);
-		return this;
-	}
-
-	public GUIPageBuilder fillBorders() {
-		this.fillBorders = true;
-		return this;
-	}
-
-	public GUIPage build() {
-		GUIPage page = new GUIPage(this.title, this.rows) {
-		};
-
-		for (GUIEntry entry : this.entries) page.addItem(entry);
-
-		return page;
-	}
+	R compile(T t, U u);
 }

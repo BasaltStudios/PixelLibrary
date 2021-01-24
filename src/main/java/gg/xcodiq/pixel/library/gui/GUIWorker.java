@@ -25,7 +25,6 @@
 package gg.xcodiq.pixel.library.gui;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
 import gg.xcodiq.pixel.library.gui.event.GUIClickEvent;
 import gg.xcodiq.pixel.library.gui.page.GUIPage;
@@ -40,6 +39,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
 @Getter
 public class GUIWorker {
 
-	private static final HashMap<Inventory, GUIWorker> workingGUIs = Maps.newHashMap();
-	private static final HashMap<Integer, GUIEntry> entriesBySlot = Maps.newHashMap();
+	private static final HashMap<Inventory, GUIWorker> workingGUIs = new HashMap<>();
+	private static final HashMap<Integer, GUIEntry> entriesBySlot = new HashMap<>();
 
 	private final GUI gui;
 	private final Inventory inventory;
@@ -72,65 +72,71 @@ public class GUIWorker {
 	}
 
 	private void setupInventory(GUIPage page) {
+//		LagCatcher.reset("GUIWorker " + page.getTitle());
 		int rows = this.gui.getRows();
+		LinkedList<GUIPage> pages = this.gui.getPages();
+
+		this.gui.getEntries().stream().filter(Objects::nonNull).collect(Collectors.toList()).forEach(this::setEntry);
 
 		if (page != null) {
 			int currentPage = this.gui.getPageNumber(page);
 			page.getEntries().stream().filter(Objects::nonNull).collect(Collectors.toList()).forEach(this::setEntry);
 
-			GUIEntry previousArrow = this.gui.getPreviousArrow().apply(page, this.player);
-			if (previousArrow != null) {
-				if (currentPage != 1) previousArrow.onAllClicks((player, event) -> {
-					GUIWorker before = GUIWorker.fromInventory(this.inventory);
-					if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
+			// PREVIOUS ARROW
+			if (currentPage != 1) {
+				this.gui.getPreviousArrow().ifPresent(f -> {
+					GUIEntry entry = f.compile(page, this.player).onAllClicks((player, event) -> {
+						GUIWorker before = GUIWorker.fromInventory(this.inventory);
+						if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
 
-					player.playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1.0f, 1.0f);
-					this.gui.open(player, currentPage - 1);
+						player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_BUTTON_CLICK_ON, 1.0f, 1.0f);
+						this.gui.open(player, currentPage - 1);
+					});
+
+					this.setEntryInSlot((rows * 9) - 6, entry);
 				});
-			}
+			} else this.gui.getEmptyArrow().ifPresent(f -> {
+				GUIEntry entry = f.compile(page, this.player).setClickActions(new HashMap<>());
 
-			GUIEntry nextArrow = this.gui.getNextArrow().apply(page, this.player);
-			if (nextArrow != null) {
-				if (currentPage != gui.getPages().size()) nextArrow.onAllClicks((player, event) -> {
-					GUIWorker before = GUIWorker.fromInventory(this.inventory);
-					if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
+				this.setEntryInSlot((rows * 9) - 6, entry);
+			});
 
-					player.playSound(player.getLocation(), Sound.UI_LOOM_SELECT_PATTERN, 1.0f, 1.0f);
-					this.gui.open(player, currentPage + 1);
+			// NEXT ARROW
+			if (currentPage != pages.size()) {
+				this.gui.getNextArrow().ifPresent(f -> {
+					GUIEntry entry = f.compile(page, this.player).onAllClicks((player, event) -> {
+						GUIWorker before = GUIWorker.fromInventory(this.inventory);
+						if (before != null && workingGUIs.containsValue(before)) before.deleteGUIWorker();
+
+						player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_BUTTON_CLICK_ON, 1.0f, 1.0f);
+						this.gui.open(player, currentPage + 1);
+					});
+
+					this.setEntryInSlot((rows * 9) - 4, entry);
 				});
-			}
+			} else this.gui.getEmptyArrow().ifPresent(f -> {
+				GUIEntry entry = f.compile(page, this.player).setClickActions(new HashMap<>());
 
-			GUIEntry emptyArrow = this.gui.getEmptyArrow().apply(page, this.player).setClickActions(new HashMap<>());
-
-			// PREVIOUS ARROW BUTTON
-			if (previousArrow != null && emptyArrow != null) {
-				if (currentPage != 1) this.setEntryInSlot((rows * 9) - 6, previousArrow);
-				else this.setEntryInSlot((rows * 9) - 6, emptyArrow);
-			}
-
-			// NEXT ARROW BUTTON
-			if (nextArrow != null && emptyArrow != null) {
-				if (currentPage != this.gui.getPages().size()) this.setEntryInSlot((rows * 9) - 4, nextArrow);
-				else this.setEntryInSlot((rows * 9) - 4, emptyArrow);
-			}
+				this.setEntryInSlot((rows * 9) - 4, entry);
+			});
 		} else {
 			// Loop through all the entries of the given GUI
 			this.gui.getEntries().stream().filter(Objects::nonNull).collect(Collectors.toList()).forEach(this::setEntry);
 		}
 
 		// CLOSE BUTTON
-		GUIEntry closeButton = this.gui.getCloseButton().apply(page, this.player);
-		if (closeButton != null) {
-			closeButton.onAllClicks((player, event) -> {
+		this.gui.getCloseButton().ifPresent(f -> {
+			GUIEntry entry = f.compile(page, this.player).onAllClicks((player, event) -> {
 				player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1.0f, 1.0f);
 				player.closeInventory();
 			});
 
-			this.setEntryInSlot((rows * 9) - 5, closeButton);
-		}
+			this.setEntryInSlot((rows * 9) - 5, entry);
+		});
 
 		// Finish the setup
-		this.gui.getPages().clear();
+		pages.clear();
+//		LagCatcher.log("GUI Worker done for " + page.getTitle());
 	}
 
 	private void setEntry(GUIEntry entry) {
@@ -170,6 +176,19 @@ public class GUIWorker {
 
 	public void deleteGUIWorker() {
 		workingGUIs.remove(this.inventory, this);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GUIWorker guiWorker = (GUIWorker) o;
+		return Objects.equals(gui, guiWorker.gui) && Objects.equals(inventory, guiWorker.inventory);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(gui, inventory);
 	}
 
 	public static class GUIWorkerListener implements Listener {

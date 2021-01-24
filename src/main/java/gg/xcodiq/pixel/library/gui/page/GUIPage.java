@@ -28,12 +28,12 @@ import gg.xcodiq.pixel.library.gui.entry.GUIEntry;
 import gg.xcodiq.pixel.library.util.ChatUtil;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 public abstract class GUIPage implements InventoryHolder {
@@ -57,6 +57,16 @@ public abstract class GUIPage implements InventoryHolder {
 		entries.add(entry);
 	}
 
-	public void onClose(GUIPage page, InventoryCloseEvent event) {
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GUIPage guiPage = (GUIPage) o;
+		return Objects.equals(entries, guiPage.entries) && Objects.equals(inventory, guiPage.inventory);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(entries, inventory);
 	}
 }

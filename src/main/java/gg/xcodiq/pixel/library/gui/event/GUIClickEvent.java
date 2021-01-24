@@ -32,6 +32,8 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 @Getter
 public class GUIClickEvent extends InventoryClickEvent implements Cancellable {
 
@@ -66,5 +68,18 @@ public class GUIClickEvent extends InventoryClickEvent implements Cancellable {
 	@Override
 	public void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GUIClickEvent that = (GUIClickEvent) o;
+		return cancelled == that.cancelled && Objects.equals(worker, that.worker);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(worker, cancelled);
 	}
 }
