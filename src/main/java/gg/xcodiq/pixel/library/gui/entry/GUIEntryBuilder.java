@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 @Getter
 public class GUIEntryBuilder {
 
-	private final HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();
+	private HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions = Maps.newHashMap();
 
 	private Supplier<ItemStack> itemStackSupplier;
 	private int slot = -1;
@@ -58,6 +58,11 @@ public class GUIEntryBuilder {
 
 	public GUIEntryBuilder setAction(ClickType clickType, BiConsumer<Player, GUIClickEvent> consumer) {
 		clickActions.put(clickType, consumer);
+		return this;
+	}
+
+	public GUIEntryBuilder setClickActions(HashMap<ClickType, BiConsumer<Player, GUIClickEvent>> clickActions) {
+		this.clickActions = clickActions;
 		return this;
 	}
 

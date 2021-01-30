@@ -131,12 +131,12 @@ public class GUIWorker {
 				player.closeInventory();
 			});
 
-			this.setEntryInSlot((rows * 9) - 5, entry);
+			int slot = entry.getSlot() == -1 ? (rows * 9) - 5 : entry.getSlot();
+			this.setEntryInSlot(slot, entry);
 		});
 
 		// Finish the setup
 		pages.clear();
-//		LagCatcher.log("GUI Worker done for " + page.getTitle());
 	}
 
 	private void setEntry(GUIEntry entry) {
@@ -160,9 +160,9 @@ public class GUIWorker {
 		} else {
 			if (this.gui.getRows() <= 2) this.inventory.addItem(entry.getItem());
 			else this.inventory.setItem(slot, entry.getItem());
-
-			GUIWorker.entriesBySlot.put(entry.getSlot() == -1 ? inventory.first(entry.getItem()) : entry.getSlot(), entry);
 		}
+
+		GUIWorker.entriesBySlot.put(entry.getSlot() == -1 ? inventory.first(entry.getItem()) : entry.getSlot(), entry);
 	}
 
 	private void openInventory() {
@@ -201,6 +201,8 @@ public class GUIWorker {
 			if (event.getClickedInventory() == null) return;
 			if (!(event.getClickedInventory().getHolder() instanceof GUI)) return;
 
+			if (event.getCurrentItem() == null) return;
+
 //			// Get an instance of a GUI worker from the inventory
 			GUIWorker worker = GUIWorker.fromInventory(event.getInventory());
 			if (worker == null) return;
@@ -216,10 +218,12 @@ public class GUIWorker {
 
 			// Get an entry instance by the clicked slot
 			GUIEntry entry = worker.getEntryBySlot(event.getSlot());
-			if (entry == null) return;
+			if (entry == null || entry.getClickActions().isEmpty()) return;
+
 
 			BiConsumer<Player, GUIClickEvent> consumer = entry.getClickAction(event.getClick());
 			if (consumer != null) consumer.accept(player, event);
+			System.out.println("REACHEDDD");
 		}
 
 		@EventHandler
