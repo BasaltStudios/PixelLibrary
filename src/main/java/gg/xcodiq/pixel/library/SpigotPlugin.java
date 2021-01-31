@@ -78,6 +78,9 @@ public abstract class SpigotPlugin extends JavaPlugin {
 		// Un register all the commands
 		this.commandManager.unregisterCommands();
 
+		// Clear the file map
+		this.fileMap.clear();
+
 		// Shutdown method
 		this.onShutdown();
 	}

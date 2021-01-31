@@ -223,7 +223,6 @@ public class GUIWorker {
 
 			BiConsumer<Player, GUIClickEvent> consumer = entry.getClickAction(event.getClick());
 			if (consumer != null) consumer.accept(player, event);
-			System.out.println("REACHEDDD");
 		}
 
 		@EventHandler
