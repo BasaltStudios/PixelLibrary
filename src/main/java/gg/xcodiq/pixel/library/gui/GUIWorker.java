@@ -63,6 +63,8 @@ public class GUIWorker {
 		this.inventory = gui.getInventory();
 		this.player = player;
 
+		GUIWorker.entriesBySlot.clear();
+
 		this.setupInventory(page);
 		this.openInventory();
 	}
@@ -234,7 +236,6 @@ public class GUIWorker {
 
 			worker.gui.close(player);
 			worker.gui.onClose(worker.gui, event);
-			GUIWorker.entriesBySlot.clear();
 			worker.gui.removeFromWorkers(player, worker);
 		}
 	}

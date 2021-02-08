@@ -1,0 +1,4 @@
+name: TestPlugin
+version: 1.0
+main: gg.xcodiq.pixel.library.TestPlugin
+api-version: 1.16
