@@ -234,6 +234,7 @@ public class GUIWorker {
 
 			worker.gui.close(player);
 			worker.gui.onClose(worker.gui, event);
+			GUIWorker.entriesBySlot.clear();
 			worker.gui.removeFromWorkers(player, worker);
 		}
 	}
