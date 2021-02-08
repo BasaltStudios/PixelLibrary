@@ -220,7 +220,6 @@ public class GUIWorker {
 			GUIEntry entry = worker.getEntryBySlot(event.getSlot());
 			if (entry == null || entry.getClickActions().isEmpty()) return;
 
-
 			BiConsumer<Player, GUIClickEvent> consumer = entry.getClickAction(event.getClick());
 			if (consumer != null) consumer.accept(player, event);
 		}
