@@ -1,0 +1,4 @@
+main: gg.xcodiq.pixel.library.StandalonePlugin
+name: pixel-library
+version: 1.0.15
+author: xCodiq

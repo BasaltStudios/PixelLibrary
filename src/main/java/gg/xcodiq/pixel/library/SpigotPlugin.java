@@ -49,7 +49,6 @@ public abstract class SpigotPlugin extends JavaPlugin {
 	private PaperCommandManager commandManager;
 
 	public SpigotPlugin() {
-		if (instance != null) throw new IllegalStateException("Only one instance can run at the time");
 		instance = this;
 	}
 
